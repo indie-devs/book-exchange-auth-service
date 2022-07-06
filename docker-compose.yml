@@ -1,0 +1,33 @@
+version: '3.5'
+services:
+  auth_service:
+    build: .
+    container_name: book_exchange_auth_service
+    env_file: .env
+    ports:
+      - "${AUTH_PORT}:${AUTH_PORT}"
+    restart: always
+    networks:
+      - auth_network
+    depends_on:
+      - auth_progresql
+
+  auth_progresql:
+    image: postgres:latest
+    container_name: book_exchange_auth_progresql
+    env_file: .env
+    ports:
+      - ${POSTGRES_PORT}:5432
+    restart: always
+    networks:
+      - auth_network
+    volumes:
+      - postgres_data:${PGDATA}
+
+networks:
+  auth_network:
+
+volumes:
+  postgres_data:
+
+
