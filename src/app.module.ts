@@ -1,8 +1,8 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { LoggerModule } from './logger/logger.module';
+import { PrismaService } from './config/db/prisma.service';
+
+import { LoggerModule } from './lib/logger/logger.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 
 @Module({
@@ -12,8 +12,7 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
       isGlobal: true,
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [PrismaService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
