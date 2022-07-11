@@ -1,4 +1,4 @@
 export const configKeys = {
-  AUTH_PORT: 'AUTH_PORT',
+  HTTP_SERVER_PORT: 'HTTP_SERVER_PORT',
   JWT_SECRET: 'JWT_SECRET',
 };

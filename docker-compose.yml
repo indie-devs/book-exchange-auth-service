@@ -5,7 +5,7 @@ services:
     container_name: book_exchange_auth_service
     env_file: .env
     ports:
-      - "${AUTH_PORT}:${AUTH_PORT}"
+      - "${HTTP_SERVER_PORT}:${HTTP_SERVER_PORT}"
     restart: always
     networks:
       - auth_network
