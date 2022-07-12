@@ -49,6 +49,17 @@ $ docker-compose --version
 docker-compose version 1.29.2, build unknown
  ```
 
+ ## Build the image
+ ```sh
+    
+docker build -t indie-devs/book-exchange-auth-service .
+ 
+# With Apple Silicon should use the following command:
+
+docker buildx build --platform linux/amd64 -t indie-devs/book-exchange-auth-service .
+
+```
+
 ## Steps to setup service using docker-compose
 1) Set the environment variables: copy file `.env` from `.env.example` and tweak it according to your preferences.
 
@@ -64,3 +75,4 @@ nano .env
 ```sh
 docker-compose up -d
 ```
+

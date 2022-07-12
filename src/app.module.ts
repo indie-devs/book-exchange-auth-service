@@ -1,10 +1,10 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { PrismaService } from './prisma/prisma.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
-import { LoggerModule } from './logger/logger.module';
-import { LoggerMiddleware } from './logger/logger.middleware';
-import { AppConfigService } from './config/app-config.service';
+import { LoggerModule } from 'src/logger/logger.module';
+import { LoggerMiddleware } from 'src/logger/logger.middleware';
+import { AppConfigService } from 'src/config/app-config.service';
 
 @Module({
   imports: [LoggerModule, ConfigModule.forRoot()],

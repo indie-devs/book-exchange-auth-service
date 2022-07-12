@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { configKeys } from './constants';
+import { configKeys } from 'src/config/constants';
 
 @Injectable()
 export class AppConfigService {

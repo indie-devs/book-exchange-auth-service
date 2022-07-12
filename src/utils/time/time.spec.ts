@@ -1,4 +1,4 @@
-import TimeUtil from './time';
+import TimeUtil from 'src/utils/time/time';
 
 describe('Time util', () => {
   describe('toUnix', () => {
