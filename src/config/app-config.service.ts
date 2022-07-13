@@ -7,6 +7,10 @@ import { RedisConfig } from 'src/types';
 export class AppConfigService {
   constructor(private configService: ConfigService) {}
 
+  get JwtExpiration(): number {
+    return 5 * 60;
+  }
+
   get port(): number {
     return this.configService.get(configKeys.HTTP_SERVER_PORT) || 3000;
   }

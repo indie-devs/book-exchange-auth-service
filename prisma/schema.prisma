@@ -9,7 +9,7 @@ datasource db {
 
 model UserAuth {
   id       String @id @default(uuid())
-  email    String @db.VarChar(255)
+  email    String @unique @db.VarChar(255)
   password String @db.VarChar(255)
 
 }
