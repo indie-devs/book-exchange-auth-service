@@ -7,9 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Auth {
+model UserAuth {
   id       String @id @default(uuid())
-  username String @db.VarChar(255)
+  email    String @db.VarChar(255)
   password String @db.VarChar(255)
 
 }

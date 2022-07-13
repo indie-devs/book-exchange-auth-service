@@ -12,7 +12,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   constructor() {
     super();
-    this.logger = new Logger('Database');
+    this.logger = new Logger(PrismaService.name);
   }
 
   async onModuleInit() {

@@ -1,3 +1,3 @@
 import { ConsoleLogger } from '@nestjs/common';
 
-export class MyLogger extends ConsoleLogger {}
+export class AppLoggerService extends ConsoleLogger {}
