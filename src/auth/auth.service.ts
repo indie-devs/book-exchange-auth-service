@@ -1,10 +1,5 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Prisma } from '@prisma/client';
 import { RegisterUserAuthDto } from 'src/auth/auth.dto';
 import { AppConfigService } from 'src/config/app-config.service';
 import { AppLoggerService } from 'src/logger/logger.service';
@@ -23,58 +18,55 @@ export class AuthService {
   ) {}
 
   async register(user: RegisterUserAuthDto): Promise<string> {
-    try {
-      const verifyToken = this.jwtService.sign({
-        sub: user.email,
-        data: {
-          email: user.email,
-          password: user.password,
-        },
-      });
+    const isExists = await this.prismaService.userAuth.findFirst({
+      where: {
+        email: user.email,
+      },
+    });
 
-      await this.redisService.client.set(
-        'verifyToken:' + verifyToken,
-        verifyToken,
-        'EX',
-        this.appConfig.JwtExpiration,
-      );
-
-      return verifyToken;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
+    if (isExists) {
+      throw new UnauthorizedException('Email already exists');
     }
+
+    const verifyToken = this.jwtService.sign({
+      sub: user.email,
+      data: {
+        email: user.email,
+        password: user.password,
+      },
+    });
+
+    await this.redisService.client.set(
+      'verifyToken:' + verifyToken,
+      verifyToken,
+      'EX',
+      this.appConfig.JwtExpiration,
+    );
+
+    return verifyToken;
   }
 
   async verify(verifyToken: string): Promise<boolean> {
-    try {
-      const key = `verifyToken:${verifyToken}`;
+    const key = `verifyToken:${verifyToken}`;
 
-      const token = await this.redisService.client.get(key);
+    const token = await this.redisService.client.get(key);
 
-      if (token !== verifyToken) {
-        return false;
-      }
-
-      const payload = this.jwtService.verify(verifyToken);
-
-      if (payload.exp < TimeUtil.toUnix(new Date())) {
-        return false;
-      }
-
-      await this.prismaService.userAuth.create({
-        data: payload.data,
-      });
-
-      await this.redisService.client.del(key);
-
-      return true;
-    } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        if (err.code === 'P2002') {
-          throw new UnauthorizedException('Email already exists');
-        }
-      }
-      throw new InternalServerErrorException(err);
+    if (token !== verifyToken) {
+      return false;
     }
+
+    const payload = this.jwtService.verify(verifyToken);
+
+    if (payload.exp < TimeUtil.toUnix(new Date())) {
+      return false;
+    }
+
+    await this.prismaService.userAuth.create({
+      data: payload.data,
+    });
+
+    await this.redisService.client.del(key);
+
+    return true;
   }
 }

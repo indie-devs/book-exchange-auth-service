@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from 'src/app.module';
 import { AppConfigService } from 'src/config/app-config.service';
+import { HttpExceptionFilter } from 'src/error/http-exception.filter';
 import { AppLoggerService } from 'src/logger/logger.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -15,6 +16,8 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   const appConfigService = app.get(AppConfigService);
 
