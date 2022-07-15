@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterUserAuthDto } from 'src/auth/auth.dto';
 import { AppConfigService } from 'src/config/app-config.service';
@@ -25,7 +25,7 @@ export class AuthService {
     });
 
     if (isExists) {
-      throw new UnauthorizedException('Email already exists');
+      throw new ConflictException('Email already exists');
     }
 
     const verifyToken = this.jwtService.sign({

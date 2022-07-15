@@ -8,11 +8,12 @@ import {
   Post,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { RegisterUserAuthDto } from 'src/auth/auth.dto';
 import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -21,12 +22,10 @@ export class AuthController {
   @ApiBody({
     type: RegisterUserAuthDto,
     examples: {
-      a: {
-        summary: 'Empty Body',
+      empty_body: {
         value: {} as RegisterUserAuthDto,
       },
-      b: {
-        summary: 'Valid Body',
+      valid_body: {
         value: {
           email: 'example@gmail.com',
           password: '123456',
