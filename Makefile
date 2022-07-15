@@ -12,4 +12,4 @@ prisma-db-push:
 	npx prisma db push
 
 prisma-deploy:
-	npx prisma deplo
+	npx prisma migrate deploy

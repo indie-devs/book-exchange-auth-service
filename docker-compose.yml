@@ -11,6 +11,7 @@ services:
       - auth_network
     depends_on:
       - auth_progresql
+      - auth_redis
 
   auth_progresql:
     image: postgres:latest
@@ -23,6 +24,18 @@ services:
       - auth_network
     volumes:
       - postgres_data:${PGDATA}
+  
+  auth_redis:
+    image: redis:latest
+    container_name: book_exchange_auth_redis
+    env_file: .env
+    command: >
+          --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "${REDIS_PORT}:6379"
+    restart: always
+    networks:
+      - auth_network
 
 networks:
   auth_network:

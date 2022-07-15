@@ -1,14 +1,21 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { AuthModule } from 'src/auth/auth.module';
+import { AppConfigModule } from 'src/config/app-config.module';
 
-import { LoggerModule } from 'src/logger/logger.module';
 import { LoggerMiddleware } from 'src/logger/logger.middleware';
-import { AppConfigService } from 'src/config/app-config.service';
+import { LoggerModule } from 'src/logger/logger.module';
+
+import { PrismaModule } from './prisma/prisma.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
-  imports: [LoggerModule, ConfigModule.forRoot()],
-  providers: [PrismaService, AppConfigService],
+  imports: [
+    LoggerModule,
+    RedisModule,
+    PrismaModule,
+    AppConfigModule,
+    AuthModule,
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
