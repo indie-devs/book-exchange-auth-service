@@ -8,7 +8,7 @@ import { AuthService } from 'src/auth/auth.service';
 
 const MockAuthService = {};
 
-describe('AuthController', () => {
+describe('auth.controller.spec.ts', () => {
   let authController: AuthController;
   let authService: AuthService;
 

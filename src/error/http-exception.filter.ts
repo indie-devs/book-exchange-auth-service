@@ -24,7 +24,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const error =
       exception instanceof HttpException
         ? exception.getResponse()
-        : filterExceptionByStatus(status);
+        : filterExceptionByStatus(status, exception['message']);
 
     response.status(status).json({
       statusCode: status,
@@ -34,18 +34,21 @@ export class HttpExceptionFilter implements ExceptionFilter {
   }
 }
 
-function filterExceptionByStatus(status: number): HttpException {
+function filterExceptionByStatus(
+  status: number,
+  message: string,
+): HttpException {
   switch (status) {
     case HttpStatus.BAD_REQUEST:
-      return new BadRequestException();
+      return new BadRequestException(message);
     case HttpStatus.UNAUTHORIZED:
-      return new UnauthorizedException();
+      return new UnauthorizedException(message);
     case HttpStatus.FORBIDDEN:
-      return new ForbiddenException();
+      return new ForbiddenException(message);
     case HttpStatus.NOT_FOUND:
-      return new NotFoundException();
+      return new NotFoundException(message);
 
     default:
-      return new InternalServerErrorException();
+      return new InternalServerErrorException(message);
   }
 }

@@ -8,7 +8,7 @@ export class AppConfigService {
   constructor(private configService: ConfigService) {}
 
   get JwtExpiration(): number {
-    return this.configService.get(configKeys.JWT_EXPIRATION) || 10 * 60;
+    return this.configService.get(configKeys.JWT_EXPIRATION) || 10 * 60 * 1000;
   }
 
   get port(): number {
@@ -25,6 +25,7 @@ export class AppConfigService {
       port: this.configService.get(configKeys.REDIS_PORT),
       password: this.configService.get(configKeys.REDIS_PASSWORD),
       db: this.configService.get(configKeys.REDIS_DB),
+      ex: this.configService.get(configKeys.REDIS_EX),
     };
   }
 }
