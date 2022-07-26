@@ -34,7 +34,7 @@ jobs:
 
   docker-deploy:
     needs:
-      - pre-docker-build
+      - pre-docker-deploy
     runs-on: ubuntu-latest
     steps:
       -
