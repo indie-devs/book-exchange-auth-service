@@ -60,4 +60,4 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tag: indiedevs/book-exchange-auth-service
+          tags: indiedevs/book-exchange-auth-service
