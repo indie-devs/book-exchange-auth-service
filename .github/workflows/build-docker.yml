@@ -1,4 +1,4 @@
-name: Prebuild
+name: Build
 on: 
   push:
     branches: [main]
@@ -10,8 +10,6 @@ on:
 
 jobs:
   docker-deploy:
-    needs:
-      - check-quality-and-prebuild
     runs-on: ubuntu-latest
     steps:
       -
