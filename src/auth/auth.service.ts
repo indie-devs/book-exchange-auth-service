@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterUserAuthDto } from 'src/auth/auth.dto';
 import { AppConfigService } from 'src/config/app-config.service';
@@ -40,7 +44,7 @@ export class AuthService {
       'verifyToken:' + verifyToken,
       verifyToken,
       'EX',
-      this.appConfig.JwtExpiration,
+      this.appConfig.redisConfig.ex,
     );
 
     return verifyToken;
@@ -52,13 +56,13 @@ export class AuthService {
     const token = await this.redisService.client.get(key);
 
     if (token !== verifyToken) {
-      return false;
+      throw new UnauthorizedException('Invalid token');
     }
 
     const payload = this.jwtService.verify(verifyToken);
 
     if (payload.exp < TimeUtil.toUnix(new Date())) {
-      return false;
+      throw new UnauthorizedException('Token expired');
     }
 
     await this.prismaService.userAuth.create({

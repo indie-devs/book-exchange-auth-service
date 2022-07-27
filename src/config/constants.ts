@@ -7,4 +7,5 @@ export const configKeys = {
   REDIS_PORT: 'REDIS_PORT',
   REDIS_PASSWORD: 'REDIS_PASSWORD',
   REDIS_DB: 'REDIS_DB',
+  REDIS_EX: 'REDIS_EX',
 };
