@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 
 import { AuthService } from 'src/auth/auth.service';
+import { BcryptService } from 'src/bcrypt/bcrypt.service';
 import { AppConfigService } from 'src/config/app-config.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RedisService } from 'src/redis/redis.service';
@@ -21,17 +22,19 @@ const MockAppConfigService = {
   },
 };
 
-describe.only('auth.service.spec.ts', () => {
+describe('auth.service.spec.ts', () => {
   let authService: AuthService;
   let jwtService: JwtService;
   let prismaService: PrismaService;
   let redisService: RedisService;
   let appConfigService: AppConfigService;
+  let bcryptService: BcryptService;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
         AuthService,
+        BcryptService,
         {
           provide: RedisService,
           useValue: MockRedisService,
@@ -56,6 +59,123 @@ describe.only('auth.service.spec.ts', () => {
     prismaService = module.get(PrismaService);
     redisService = module.get(RedisService);
     appConfigService = module.get(AppConfigService);
+    bcryptService = module.get(BcryptService);
+  });
+  describe('login', () => {
+    it('Should return access token', async () => {
+      const token = 'access_token';
+
+      const data = {
+        email: 'example@gmail.com',
+        password: '123456',
+      };
+      prismaService.userAuth.findFirst = jest.fn().mockImplementation(() => {
+        return data;
+      });
+
+      bcryptService.compare = jest.fn().mockImplementation(() => {
+        return true;
+      });
+
+      jwtService.sign = jest.fn().mockImplementation(() => {
+        return token;
+      });
+
+      const result = await authService.login(data);
+
+      expect(result).toEqual(token);
+
+      expect(prismaService.userAuth.findFirst).toHaveBeenCalledWith({
+        where: { email: data.email },
+      });
+      expect(jwtService.sign).toHaveBeenCalledWith({
+        sub: data.email,
+        data,
+      });
+    });
+
+    it('Should throw error if not found auth user', async () => {
+      const data = {
+        email: 'example@gmail.com',
+        password: '123456',
+      };
+
+      const error = new Error('Invalid credentials');
+      prismaService.userAuth.findFirst = jest.fn().mockImplementation(() => {
+        return data;
+      });
+      await expect(authService.login(data)).rejects.toThrowError(error);
+
+      expect(prismaService.userAuth.findFirst).toHaveBeenCalledWith({
+        where: { email: data.email },
+      });
+    });
+
+    it('Should throw error if not match password and hash value', async () => {
+      const data = {
+        email: 'example@gmail.com',
+        password: '123456',
+      };
+
+      const error = new Error('Invalid credentials');
+      prismaService.userAuth.findFirst = jest.fn().mockImplementation(() => {
+        return data;
+      });
+
+      bcryptService.compare = jest.fn().mockImplementation(() => {
+        return false;
+      });
+      await expect(authService.login(data)).rejects.toThrowError(error);
+
+      expect(prismaService.userAuth.findFirst).toHaveBeenCalledWith({
+        where: { email: data.email },
+      });
+    });
+
+    it('Should throw error if PrismaService throw error ', async () => {
+      const data = {
+        email: 'example@gmail.com',
+        password: '123456',
+      };
+
+      const error = new Error('Prisma Error');
+      prismaService.userAuth.findFirst = jest.fn().mockRejectedValue(error);
+
+      await expect(authService.login(data)).rejects.toThrowError(error);
+
+      expect(prismaService.userAuth.findFirst).toHaveBeenCalledWith({
+        where: { email: data.email },
+      });
+    });
+
+    it('Should throw error if JwtService throw error ', async () => {
+      const data = {
+        email: 'example@gmail.com',
+        password: '123456',
+      };
+
+      const error = new Error('JwtService Error');
+      prismaService.userAuth.findFirst = jest.fn().mockImplementation(() => {
+        return data;
+      });
+
+      bcryptService.compare = jest.fn().mockImplementation(() => {
+        return true;
+      });
+
+      jwtService.sign = jest.fn().mockRejectedValue(error);
+
+      await expect(authService.login(data)).rejects.toThrowError(error);
+
+      expect(prismaService.userAuth.findFirst).toHaveBeenCalledWith({
+        where: { email: data.email },
+      });
+
+      expect(jwtService.sign).toHaveBeenCalledWith({
+        sub: data.email,
+        data,
+      });
+    });
   });
 
   describe('register', () => {
@@ -203,6 +323,9 @@ describe.only('auth.service.spec.ts', () => {
         },
       };
       prismaService.userAuth.create = jest.fn();
+      bcryptService.hash = jest.fn().mockImplementation(() => {
+        return 'hashValue';
+      });
 
       jwtService.verify = jest.fn().mockImplementation(() => {
         return payload;
@@ -218,7 +341,10 @@ describe.only('auth.service.spec.ts', () => {
       expect(result).toEqual(true);
 
       expect(prismaService.userAuth.create).toHaveBeenCalledWith({
-        data: payload.data,
+        data: {
+          email: payload.data.email,
+          password: 'hashValue',
+        },
       });
 
       expect(redisService.client.get).toHaveBeenCalledWith(
@@ -297,7 +423,7 @@ describe.only('auth.service.spec.ts', () => {
       );
     });
 
-    it.only('Should throw error when PrismaService throw error', async () => {
+    it('Should throw error when PrismaService throw error', async () => {
       const token = 'verifyToken';
       const error = new Error('PrismaService Error');
       const payload = {
