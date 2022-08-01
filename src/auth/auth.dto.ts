@@ -7,3 +7,16 @@ export class RegisterUserAuthDto {
   @IsNotEmpty()
   password: string;
 }
+
+export class LoginUserAuthReqDto {
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  password: string;
+}
+
+export class LoginUserAuthResDto {
+  @IsNotEmpty()
+  access_token: string;
+}

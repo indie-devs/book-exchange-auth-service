@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { BadRequestException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 
 import { AuthController } from 'src/auth/auth.controller';
-import { RegisterUserAuthDto } from 'src/auth/auth.dto';
+import { LoginUserAuthReqDto, RegisterUserAuthDto } from 'src/auth/auth.dto';
 import { AuthService } from 'src/auth/auth.service';
 
 const MockAuthService = {};
@@ -22,11 +21,46 @@ describe('auth.controller.spec.ts', () => {
     authService = module.get(AuthService);
   });
 
+  describe('login', () => {
+    it('Should return access token', async () => {
+      authService.login = jest
+        .fn()
+        .mockImplementation((data: LoginUserAuthReqDto) => {
+          return 'accessToken';
+        });
+
+      const form: LoginUserAuthReqDto = {
+        email: 'example@gmail.com',
+        password: '123456',
+      };
+      const result = await authController.login(form);
+
+      expect(result).toEqual({
+        statusCode: 200,
+        message: 'success',
+        data: { access_token: 'accessToken' },
+      });
+      expect(jest.spyOn(authService, 'login')).toHaveBeenCalledWith(form);
+    });
+
+    it('Should throw error when AuthSerivce throw error', async () => {
+      const error = new Error('AuthService error');
+      authService.login = jest.fn().mockRejectedValue(error);
+      const form: LoginUserAuthReqDto = {
+        email: 'example@gmail.com',
+        password: '123456',
+      };
+
+      await expect(authController.login(form)).rejects.toThrowError(error);
+      expect(jest.spyOn(authService, 'login')).toHaveBeenCalledWith(form);
+    });
+  });
+
   describe('register', () => {
     it('Should return verify token', async () => {
       authService.register = jest
         .fn()
-        .mockImplementation((dataL: RegisterUserAuthDto) => {
+        .mockImplementation((data: RegisterUserAuthDto) => {
           return 'verifyToken';
         });
 
