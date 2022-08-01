@@ -2,7 +2,7 @@
 import { Test } from '@nestjs/testing';
 
 import { AuthController } from 'src/auth/auth.controller';
-import { LoginUserAuthDto, RegisterUserAuthDto } from 'src/auth/auth.dto';
+import { LoginUserAuthReqDto, RegisterUserAuthDto } from 'src/auth/auth.dto';
 import { AuthService } from 'src/auth/auth.service';
 
 const MockAuthService = {};
@@ -25,11 +25,11 @@ describe('auth.controller.spec.ts', () => {
     it('Should return access token', async () => {
       authService.login = jest
         .fn()
-        .mockImplementation((data: LoginUserAuthDto) => {
+        .mockImplementation((data: LoginUserAuthReqDto) => {
           return 'accessToken';
         });
 
-      const form: LoginUserAuthDto = {
+      const form: LoginUserAuthReqDto = {
         email: 'example@gmail.com',
         password: '123456',
       };
@@ -46,7 +46,7 @@ describe('auth.controller.spec.ts', () => {
     it('Should throw error when AuthSerivce throw error', async () => {
       const error = new Error('AuthService error');
       authService.login = jest.fn().mockRejectedValue(error);
-      const form: LoginUserAuthDto = {
+      const form: LoginUserAuthReqDto = {
         email: 'example@gmail.com',
         password: '123456',
       };

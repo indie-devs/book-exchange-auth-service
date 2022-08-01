@@ -1,10 +1,15 @@
 import {
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { LoginUserAuthDto, RegisterUserAuthDto } from 'src/auth/auth.dto';
+import {
+  LoginUserAuthReqDto,
+  LoginUserAuthResDto,
+  RegisterUserAuthDto,
+} from 'src/auth/auth.dto';
 import { BcryptService } from 'src/bcrypt/bcrypt.service';
 import { AppConfigService } from 'src/config/app-config.service';
 import { AppLoggerService } from 'src/logger/logger.service';
@@ -23,7 +28,7 @@ export class AuthService {
     private readonly bryptService: BcryptService,
   ) {}
 
-  async login(credentials: LoginUserAuthDto): Promise<string> {
+  async login(credentials: LoginUserAuthReqDto): Promise<LoginUserAuthResDto> {
     const user = await this.prismaService.userAuth.findFirst({
       where: {
         email: credentials.email,
@@ -34,7 +39,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isMatch = await this.bryptService.compare(
+    const isMatch = await this.bryptService.isEqual(
       credentials.password,
       user.password,
     );
@@ -48,7 +53,7 @@ export class AuthService {
       data: user,
     });
 
-    return accessToken;
+    return { access_token: accessToken };
   }
 
   async register(user: RegisterUserAuthDto): Promise<string> {
@@ -95,7 +100,7 @@ export class AuthService {
       throw new UnauthorizedException('Token expired');
     }
 
-    const hash = await this.bryptService.hash(payload.data.password);
+    const hash = await this.bryptService.hashString(payload.data.password);
 
     await this.prismaService.userAuth.create({
       data: {

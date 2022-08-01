@@ -9,7 +9,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { LoginUserAuthDto, RegisterUserAuthDto } from 'src/auth/auth.dto';
+import { LoginUserAuthReqDto, RegisterUserAuthDto } from 'src/auth/auth.dto';
 import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
@@ -20,20 +20,20 @@ export class AuthController {
 
   @Post('login')
   @ApiBody({
-    type: LoginUserAuthDto,
+    type: LoginUserAuthReqDto,
     examples: {
       empty_body: {
-        value: {} as LoginUserAuthDto,
+        value: {} as LoginUserAuthReqDto,
       },
       valid_body: {
         value: {
           email: 'example@gmail.com',
           password: '123456',
-        } as LoginUserAuthDto,
+        } as LoginUserAuthReqDto,
       },
     },
   })
-  async login(@Body() body: LoginUserAuthDto) {
+  async login(@Body() body: LoginUserAuthReqDto) {
     const token = await this.authService.login(body);
     return {
       statusCode: HttpStatus.OK,

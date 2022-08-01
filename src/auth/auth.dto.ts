@@ -8,10 +8,15 @@ export class RegisterUserAuthDto {
   password: string;
 }
 
-export class LoginUserAuthDto {
+export class LoginUserAuthReqDto {
   @IsEmail()
   email: string;
 
   @IsNotEmpty()
   password: string;
+}
+
+export class LoginUserAuthResDto {
+  @IsNotEmpty()
+  access_token: string;
 }

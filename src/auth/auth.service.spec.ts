@@ -73,7 +73,7 @@ describe('auth.service.spec.ts', () => {
         return data;
       });
 
-      bcryptService.compare = jest.fn().mockImplementation(() => {
+      bcryptService.isEqual = jest.fn().mockImplementation(() => {
         return true;
       });
 
@@ -83,7 +83,9 @@ describe('auth.service.spec.ts', () => {
 
       const result = await authService.login(data);
 
-      expect(result).toEqual(token);
+      expect(result).toEqual({
+        access_token: token,
+      });
 
       expect(prismaService.userAuth.findFirst).toHaveBeenCalledWith({
         where: { email: data.email },
@@ -92,6 +94,10 @@ describe('auth.service.spec.ts', () => {
         sub: data.email,
         data,
       });
+      expect(bcryptService.isEqual).toHaveBeenCalledWith(
+        data.password,
+        data.password,
+      );
     });
 
     it('Should throw error if not found auth user', async () => {
@@ -122,7 +128,7 @@ describe('auth.service.spec.ts', () => {
         return data;
       });
 
-      bcryptService.compare = jest.fn().mockImplementation(() => {
+      bcryptService.isEqual = jest.fn().mockImplementation(() => {
         return false;
       });
       await expect(authService.login(data)).rejects.toThrowError(error);
@@ -130,6 +136,11 @@ describe('auth.service.spec.ts', () => {
       expect(prismaService.userAuth.findFirst).toHaveBeenCalledWith({
         where: { email: data.email },
       });
+
+      expect(bcryptService.isEqual).toHaveBeenCalledWith(
+        data.password,
+        data.password,
+      );
     });
 
     it('Should throw error if PrismaService throw error ', async () => {
@@ -145,35 +156,6 @@ describe('auth.service.spec.ts', () => {
 
       expect(prismaService.userAuth.findFirst).toHaveBeenCalledWith({
         where: { email: data.email },
-      });
-    });
-
-    it('Should throw error if JwtService throw error ', async () => {
-      const data = {
-        email: 'example@gmail.com',
-        password: '123456',
-      };
-
-      const error = new Error('JwtService Error');
-      prismaService.userAuth.findFirst = jest.fn().mockImplementation(() => {
-        return data;
-      });
-
-      bcryptService.compare = jest.fn().mockImplementation(() => {
-        return true;
-      });
-
-      jwtService.sign = jest.fn().mockRejectedValue(error);
-
-      await expect(authService.login(data)).rejects.toThrowError(error);
-
-      expect(prismaService.userAuth.findFirst).toHaveBeenCalledWith({
-        where: { email: data.email },
-      });
-
-      expect(jwtService.sign).toHaveBeenCalledWith({
-        sub: data.email,
-        data,
       });
     });
   });
@@ -249,31 +231,6 @@ describe('auth.service.spec.ts', () => {
       });
     });
 
-    it('Should throw error if JwtService throw error ', async () => {
-      const data = {
-        email: 'example@gmail.com',
-        password: '123456',
-      };
-
-      const error = new Error('JwtService Error');
-      prismaService.userAuth.findFirst = jest.fn().mockImplementation(() => {
-        return null;
-      });
-
-      jwtService.sign = jest.fn().mockRejectedValue(error);
-
-      await expect(authService.register(data)).rejects.toThrowError(error);
-
-      expect(prismaService.userAuth.findFirst).toHaveBeenCalledWith({
-        where: { email: data.email },
-      });
-
-      expect(jwtService.sign).toHaveBeenCalledWith({
-        sub: data.email,
-        data,
-      });
-    });
-
     it('Should throw error if RedisService throw error', async () => {
       const token = 'verifyToken';
       prismaService.userAuth.findFirst = jest.fn().mockImplementation(() => {
@@ -323,7 +280,7 @@ describe('auth.service.spec.ts', () => {
         },
       };
       prismaService.userAuth.create = jest.fn();
-      bcryptService.hash = jest.fn().mockImplementation(() => {
+      bcryptService.hashString = jest.fn().mockImplementation(() => {
         return 'hashValue';
       });
 
@@ -355,6 +312,9 @@ describe('auth.service.spec.ts', () => {
         `verifyToken:${token}`,
       );
       expect(jwtService.verify).toHaveBeenCalledWith(token);
+      expect(bcryptService.hashString).toHaveBeenCalledWith(
+        payload.data.password,
+      );
     });
 
     it('Should throw invalid token error when redis client return wrong token', async () => {
