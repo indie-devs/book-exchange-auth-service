@@ -84,7 +84,7 @@ export class AuthService {
     return verifyToken;
   }
 
-  async verify(verifyToken: string): Promise<boolean> {
+  async verifyRegister(verifyToken: string): Promise<boolean> {
     const key = `verifyToken:${verifyToken}`;
 
     const token = await this.redisService.client.get(key);
@@ -105,6 +105,7 @@ export class AuthService {
       data: {
         email: payload.data.email,
         password: hash,
+        roles: ['USER'],
       },
     });
 

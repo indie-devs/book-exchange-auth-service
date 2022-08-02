@@ -23,10 +23,14 @@ describe('auth.controller.spec.ts', () => {
 
   describe('login', () => {
     it('Should return access token', async () => {
+      const token = {
+        access_token: 'access_token',
+      };
+
       authService.login = jest
         .fn()
         .mockImplementation((data: LoginUserAuthReqDto) => {
-          return 'accessToken';
+          return token;
         });
 
       const form: LoginUserAuthReqDto = {
@@ -38,7 +42,7 @@ describe('auth.controller.spec.ts', () => {
       expect(result).toEqual({
         statusCode: 200,
         message: 'success',
-        data: { access_token: 'accessToken' },
+        data: token,
       });
       expect(jest.spyOn(authService, 'login')).toHaveBeenCalledWith(form);
     });
@@ -91,27 +95,35 @@ describe('auth.controller.spec.ts', () => {
     });
   });
 
-  describe('verify', () => {
+  describe('verifyRegister', () => {
     it('Should return True value', async () => {
-      authService.verify = jest.fn().mockImplementation((token: string) => {
-        return true;
-      });
+      authService.verifyRegister = jest
+        .fn()
+        .mockImplementation((token: string) => {
+          return true;
+        });
 
       const token = 'verifyToken';
-      const result = await authController.verify(token);
+      const result = await authController.verifyRegister(token);
 
       expect(result).toEqual({ statusCode: 200, message: 'success' });
-      expect(jest.spyOn(authService, 'verify')).toHaveBeenCalledWith(token);
+      expect(jest.spyOn(authService, 'verifyRegister')).toHaveBeenCalledWith(
+        token,
+      );
     });
 
     it('Should throw error when AuthSerivce throw error', async () => {
       const error = new Error('AuthService error');
       const token = 'verifyToken';
 
-      authService.verify = jest.fn().mockRejectedValue(error);
+      authService.verifyRegister = jest.fn().mockRejectedValue(error);
 
-      await expect(authController.verify(token)).rejects.toThrowError(error);
-      expect(jest.spyOn(authService, 'verify')).toHaveBeenCalledWith(token);
+      await expect(authController.verifyRegister(token)).rejects.toThrowError(
+        error,
+      );
+      expect(jest.spyOn(authService, 'verifyRegister')).toHaveBeenCalledWith(
+        token,
+      );
     });
   });
 });

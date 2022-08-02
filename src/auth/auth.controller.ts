@@ -6,11 +6,15 @@ import {
   Injectable,
   Param,
   Post,
+  Request,
+  Response,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { LoginUserAuthReqDto, RegisterUserAuthDto } from 'src/auth/auth.dto';
 import { AuthService } from 'src/auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Injectable()
 @ApiTags('auth')
@@ -38,9 +42,7 @@ export class AuthController {
     return {
       statusCode: HttpStatus.OK,
       message: 'success',
-      data: {
-        access_token: token,
-      },
+      data: token,
     };
   }
 
@@ -71,8 +73,8 @@ export class AuthController {
   }
 
   @Get('register/verify/:token')
-  async verify(@Param('token') token: string) {
-    const isVerified = await this.authService.verify(token);
+  async verifyRegister(@Param('token') token: string) {
+    const isVerified = await this.authService.verifyRegister(token);
     if (!isVerified) {
       throw new UnauthorizedException();
     }
@@ -80,5 +82,20 @@ export class AuthController {
       statusCode: HttpStatus.OK,
       message: 'success',
     };
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('verify')
+  async verify(@Request() req, @Response() res) {
+    if (!req.user) {
+      throw new UnauthorizedException();
+    }
+    res.set('x-user-id', req.user.id);
+    if (req.user.roles.includes('ADMIN')) {
+      res.set('x-is-admin', true);
+    }
+    res.json({
+      statusCode: HttpStatus.OK,
+      message: 'success',
+    });
   }
 }

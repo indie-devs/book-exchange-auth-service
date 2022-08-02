@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
+import { JwtStrategy } from 'src/auth/jwt.strategy';
 import { BcryptService } from 'src/bcrypt/bcrypt.service';
 import { AppConfigService } from 'src/config/app-config.service';
 import { AuthController } from './auth.controller';
@@ -17,7 +18,7 @@ import { AuthController } from './auth.controller';
       inject: [AppConfigService],
     }),
   ],
-  providers: [AuthService, BcryptService],
+  providers: [AuthService, BcryptService, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
