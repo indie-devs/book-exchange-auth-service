@@ -95,7 +95,7 @@ export class AuthService {
 
     const payload = this.jwtService.verify(verifyToken);
 
-    if (payload.exp < TimeUtil.toUnix(new Date())) {
+    if (TimeUtil.isExpired(payload.exp)) {
       throw new UnauthorizedException('Token expired');
     }
 

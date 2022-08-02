@@ -10,4 +10,18 @@ describe('Time util', () => {
       expect(TimeUtil.toUnix(new Date('2022.07.08'))).not.toEqual(1657213201);
     });
   });
+
+  describe('isExpired', () => {
+    const now = new Date();
+    const tomorrow = new Date(now.getTime() + 1000 * 60 * 60 * 24);
+    const yesterday = new Date(now.getTime() - 1000 * 60 * 60 * 24);
+
+    it('Should return true', () => {
+      expect(TimeUtil.isExpired(TimeUtil.toUnix(yesterday))).toBeTruthy();
+    });
+
+    it('Should return false', () => {
+      expect(TimeUtil.isExpired(TimeUtil.toUnix(tomorrow))).toBeFalsy();
+    });
+  });
 });
