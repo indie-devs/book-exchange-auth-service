@@ -4,8 +4,10 @@ import { Test } from '@nestjs/testing';
 import { AuthController } from 'src/auth/auth.controller';
 import { LoginUserAuthReqDto, RegisterUserAuthDto } from 'src/auth/auth.dto';
 import { AuthService } from 'src/auth/auth.service';
+import { AppConfigService } from 'src/config/app-config.service';
 
 const MockAuthService = {};
+const MockAppConfigService = {};
 
 describe('auth.controller.spec.ts', () => {
   let authController: AuthController;
@@ -14,7 +16,13 @@ describe('auth.controller.spec.ts', () => {
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [{ provide: AuthService, useValue: MockAuthService }],
+      providers: [
+        { provide: AuthService, useValue: MockAuthService },
+        {
+          provide: AppConfigService,
+          useValue: MockAppConfigService,
+        },
+      ],
     }).compile();
 
     authController = module.get(AuthController);

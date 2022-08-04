@@ -15,12 +15,16 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { LoginUserAuthReqDto, RegisterUserAuthDto } from 'src/auth/auth.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { AppConfigService } from 'src/config/app-config.service';
 
 @Injectable()
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly appConfigService: AppConfigService,
+  ) {}
 
   @Post('login')
   @ApiBody({
@@ -89,9 +93,11 @@ export class AuthController {
     if (!req.user) {
       throw new UnauthorizedException();
     }
-    res.set('x-user-id', req.user.id);
-    if (req.user.roles.includes('ADMIN')) {
-      res.set('x-is-admin', true);
+
+    const headerConfig = this.appConfigService.getHeaderConfig();
+    res.set(headerConfig.userId, req.user.id);
+    if (req.user.isAdmin) {
+      res.set(headerConfig.isAdmin, true);
     }
     res.json({
       statusCode: HttpStatus.OK,

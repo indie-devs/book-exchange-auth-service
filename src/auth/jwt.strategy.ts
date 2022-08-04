@@ -1,6 +1,7 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { JwtUserResDto } from 'src/auth/auth.dto';
 import { AppConfigService } from 'src/config/app-config.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import TimeUtil from 'src/utils/time/time';
@@ -18,10 +19,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: any): Promise<JwtUserResDto> {
     const { sub, exp } = payload;
 
-    if (TimeUtil.isExpired(exp)) {
+    if (TimeUtil.expiredTimestamp(exp)) {
       throw new UnauthorizedException('Token expired');
     }
 

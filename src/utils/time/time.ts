@@ -3,7 +3,7 @@ class TimeUtil {
     return Math.floor(date.getTime() / 1000);
   }
 
-  static isExpired(exp: number): boolean {
+  static expiredTimestamp(exp: number): boolean {
     return TimeUtil.toUnix(new Date()) > exp;
   }
 }

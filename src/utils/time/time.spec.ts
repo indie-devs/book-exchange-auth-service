@@ -11,17 +11,19 @@ describe('Time util', () => {
     });
   });
 
-  describe('isExpired', () => {
+  describe('expiredTimestamp', () => {
     const now = new Date();
     const tomorrow = new Date(now.getTime() + 1000 * 60 * 60 * 24);
     const yesterday = new Date(now.getTime() - 1000 * 60 * 60 * 24);
 
     it('Should return true', () => {
-      expect(TimeUtil.isExpired(TimeUtil.toUnix(yesterday))).toBeTruthy();
+      expect(
+        TimeUtil.expiredTimestamp(TimeUtil.toUnix(yesterday)),
+      ).toBeTruthy();
     });
 
     it('Should return false', () => {
-      expect(TimeUtil.isExpired(TimeUtil.toUnix(tomorrow))).toBeFalsy();
+      expect(TimeUtil.expiredTimestamp(TimeUtil.toUnix(tomorrow))).toBeFalsy();
     });
   });
 });

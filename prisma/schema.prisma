@@ -12,4 +12,5 @@ model UserAuth {
   email    String   @unique @db.VarChar(255)
   password String   @db.VarChar(255)
   roles    String[]
+  isAdmin  Boolean  @default(false)
 }
