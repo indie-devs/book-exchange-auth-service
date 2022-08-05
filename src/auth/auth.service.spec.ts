@@ -267,7 +267,7 @@ describe('auth.service.spec.ts', () => {
     });
   });
 
-  describe('verify', () => {
+  describe('verifyRegister', () => {
     it('Should return verify token', async () => {
       const token = 'verifyToken';
 
@@ -293,7 +293,7 @@ describe('auth.service.spec.ts', () => {
       });
       redisService.client.del = jest.fn();
 
-      const result = await authService.verify(token);
+      const result = await authService.verifyRegister(token);
 
       expect(result).toEqual(true);
 
@@ -301,6 +301,7 @@ describe('auth.service.spec.ts', () => {
         data: {
           email: payload.data.email,
           password: 'hashValue',
+          roles: ['USER'],
         },
       });
 
@@ -333,7 +334,7 @@ describe('auth.service.spec.ts', () => {
         return 'wrongToken';
       });
 
-      await expect(authService.verify(token)).rejects.toThrowError(
+      await expect(authService.verifyRegister(token)).rejects.toThrowError(
         'Invalid token',
       );
 
@@ -361,7 +362,7 @@ describe('auth.service.spec.ts', () => {
         return token;
       });
 
-      await expect(authService.verify(token)).rejects.toThrowError(
+      await expect(authService.verifyRegister(token)).rejects.toThrowError(
         'Token expired',
       );
 
@@ -376,7 +377,9 @@ describe('auth.service.spec.ts', () => {
       const error = new Error('RedisService Error');
       redisService.client.get = jest.fn().mockRejectedValue(error);
 
-      await expect(authService.verify(token)).rejects.toThrowError(error);
+      await expect(authService.verifyRegister(token)).rejects.toThrowError(
+        error,
+      );
 
       expect(redisService.client.get).toHaveBeenCalledWith(
         `verifyToken:${token}`,
@@ -404,7 +407,9 @@ describe('auth.service.spec.ts', () => {
 
       prismaService.userAuth.create = jest.fn().mockRejectedValue(error);
 
-      await expect(authService.verify(token)).rejects.toThrowError(error);
+      await expect(authService.verifyRegister(token)).rejects.toThrowError(
+        error,
+      );
     });
   });
 });

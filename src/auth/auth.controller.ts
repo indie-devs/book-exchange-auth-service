@@ -6,17 +6,25 @@ import {
   Injectable,
   Param,
   Post,
+  Request,
+  Response,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { LoginUserAuthReqDto, RegisterUserAuthDto } from 'src/auth/auth.dto';
 import { AuthService } from 'src/auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { AppConfigService } from 'src/config/app-config.service';
 
 @Injectable()
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly appConfigService: AppConfigService,
+  ) {}
 
   @Post('login')
   @ApiBody({
@@ -38,9 +46,7 @@ export class AuthController {
     return {
       statusCode: HttpStatus.OK,
       message: 'success',
-      data: {
-        access_token: token,
-      },
+      data: token,
     };
   }
 
@@ -71,8 +77,8 @@ export class AuthController {
   }
 
   @Get('register/verify/:token')
-  async verify(@Param('token') token: string) {
-    const isVerified = await this.authService.verify(token);
+  async verifyRegister(@Param('token') token: string) {
+    const isVerified = await this.authService.verifyRegister(token);
     if (!isVerified) {
       throw new UnauthorizedException();
     }
@@ -80,5 +86,22 @@ export class AuthController {
       statusCode: HttpStatus.OK,
       message: 'success',
     };
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('verify')
+  async verify(@Request() req, @Response() res) {
+    if (!req.user) {
+      throw new UnauthorizedException();
+    }
+
+    const headerConfig = this.appConfigService.getHeaderConfig();
+    res.set(headerConfig.userId, req.user.id);
+    if (req.user.isAdmin) {
+      res.set(headerConfig.isAdmin, true);
+    }
+    res.json({
+      statusCode: HttpStatus.OK,
+      message: 'success',
+    });
   }
 }

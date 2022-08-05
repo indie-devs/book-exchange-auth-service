@@ -8,8 +8,9 @@ datasource db {
 }
 
 model UserAuth {
-  id       String @id @default(uuid())
-  email    String @unique @db.VarChar(255)
-  password String @db.VarChar(255)
-
+  id       String   @id @default(uuid())
+  email    String   @unique @db.VarChar(255)
+  password String   @db.VarChar(255)
+  roles    String[]
+  isAdmin  Boolean  @default(false)
 }

@@ -5,3 +5,8 @@ export interface RedisConfig {
   db: number;
   ex: number;
 }
+
+export interface HeaderConfig {
+  userId: string;
+  isAdmin: string;
+}
