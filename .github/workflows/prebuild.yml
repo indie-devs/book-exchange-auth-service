@@ -10,7 +10,7 @@ jobs:
 
     services:
  
-      redis=svc:
+      redis-svc:
         image: redis
         options: >-
           --health-cmd "redis-cli ping"
@@ -19,8 +19,9 @@ jobs:
           --health-retries 5
         env:
           REDIS_PORT: 6379
+        ports:
+          - 6379:6379
           
-
       postgres-svc:
         image: postgres
         env:
@@ -28,7 +29,8 @@ jobs:
           POSTGRES_USER: test_user
           POSTGRES_DB: test_db
           POSTGRES_PORT: 5432
-
+        ports:
+          - 5432:5432
 
         options: >-
           --health-cmd pg_isready
@@ -37,7 +39,6 @@ jobs:
           --health-retries 5
 
     steps:
-
       - name: "Checkout"
         uses: actions/checkout@v3
 
@@ -54,33 +55,36 @@ jobs:
         uses: szenius/set-timezone@v1.0
         with:
           timezoneLinux: "Asia/Ho_Chi_Minh"
-      
-      - name: "Install dependencies"
-        run: pnpm install
-        
-      - name: "Lint"
-        run: |
-          npm run lint
 
       - name: Create env file
         run: |
           touch .env.test
           echo NODE_ENV=test >> .env.test
-          echo REDIS_HOST=redis-svc >> .env.test
+          echo REDIS_HOST=localhost >> .env.test
           echo REDIS_PORT=6379 >> .env.test
           echo JWT_SECRET=test >> .env.test
           echo JWT_EXPIRATION='10m' >> .env.test
 
-          echo POSTGRES_HOST=postgres-svc >> .env.test
+          echo POSTGRES_HOST=localhost >> .env.test
           echo POSTGRES_PORT=5432 >> .env.test
           echo POSTGRES_USER=test_user >> .env.test
           echo POSTGRES_PASSWORD=test_pw >> .env.test
           echo POSTGRES_DB=test_db >> .env.test
-          echo DATABASE_URL=postgres://test_user:test_pw@postgres-svc:5432/test_db >> .env.test
+          echo DATABASE_URL=postgres://test_user:test_pw@localhost:5432/test_db >> .env.test
 
           echo HEADER_USER_ID='x-user-id' >> .env.test
           echo HEADER_IS_ADMIN='x-is-admin' >> .env.test
-          cat .env.test
+          
+      - name: "Install dependencies"
+        run: pnpm install
+        
+      - name: "Postinstall for test"
+        run: |
+          npm run postinstall:test
+
+      - name: "Lint"
+        run: |
+          npm run lint
 
       - name: "Test"
         run: |
