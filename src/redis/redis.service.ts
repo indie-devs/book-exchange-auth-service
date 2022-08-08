@@ -19,4 +19,8 @@ export class RedisService {
 
     this.logger.log(`Redis connected`);
   }
+
+  async close() {
+    this.client.quit();
+  }
 }

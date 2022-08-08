@@ -31,8 +31,8 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$dockerize_versi
     && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$dockerize_version.tar.gz \
     && rm dockerize-alpine-linux-amd64-$dockerize_version.tar.gz
 
-ARG node_env=production
-ENV node_env=${node_env}
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 

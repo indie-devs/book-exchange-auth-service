@@ -12,9 +12,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { LoginUserAuthReqDto, RegisterUserAuthDto } from 'src/auth/auth.dto';
-import { AuthService } from 'src/auth/auth.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import {
+  LoginUserAuthReqDto,
+  RegisterUserAuthDto,
+} from 'src/user_auth/auth.dto';
+import { AuthService } from 'src/user_auth/auth.service';
+import { JwtAuthGuard } from 'src/user_auth/jwt-auth.guard';
 import { AppConfigService } from 'src/config/app-config.service';
 
 @Injectable()

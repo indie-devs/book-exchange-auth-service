@@ -7,6 +7,34 @@ on:
 jobs:
   check-quality-and-prebuild:
     runs-on: ubuntu-latest
+
+    services:
+ 
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          REDIS_PORT: 6379
+          
+
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: test_pw
+          POSTGRES_USER: test_user
+          POSTGRES_DB: test_db
+
+
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
 
       - name: "Checkout"
@@ -33,9 +61,30 @@ jobs:
         run: |
           npm run lint
 
+      - name: Create env file
+        run: |
+          touch .env.test
+          echo NODE_ENV=test >> .env.test
+          echo REDIS_HOST=redis >> .env.test
+          echo REDIS_PORT=6379 >> .env.test
+          echo JWT_SECRET=test >> .env.test
+          echo JWT_EXPIRATION='10m' >> .env.test
+
+          echo POSTGRES_HOST=postgres >> .env.test
+          echo POSTGRES_PORT=5432 >> .env.test
+          echo POSTGRES_USER=test_user >> .env.test
+          echo POSTGRES_PASSWORD=test_pw >> .env.test
+          echo POSTGRES_DB=test_db >> .env.test
+          echo DATABASE_URL=postgres://test_user:test_pw@postgres:5432/test_db >> .env.test
+
+          echo HEADER_USER_ID='x-user-id' >> .env.test
+          echo HEADER_IS_ADMIN='x-is-admin' >> .env.test
+          cat .env.test
+
       - name: "Test"
         run: |
-          npm run test
+          npm run test:unit
+          npm run test:integration    
 
       - name : "Build"
         run: |

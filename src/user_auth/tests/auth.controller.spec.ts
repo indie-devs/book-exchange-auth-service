@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test } from '@nestjs/testing';
 
-import { AuthController } from 'src/auth/auth.controller';
-import { LoginUserAuthReqDto, RegisterUserAuthDto } from 'src/auth/auth.dto';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthController } from 'src/user_auth/auth.controller';
+import {
+  LoginUserAuthReqDto,
+  RegisterUserAuthDto,
+} from 'src/user_auth/auth.dto';
+import { AuthService } from 'src/user_auth/auth.service';
 import { AppConfigService } from 'src/config/app-config.service';
 
 const MockAuthService = {};
