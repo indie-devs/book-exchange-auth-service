@@ -60,8 +60,7 @@ jobs:
         run: |
           touch .env.test
           echo NODE_ENV=test >> .env.test
-          echo REDIS_HOST=localhost >> .env.test
-          echo REDIS_PORT=6379 >> .env.test
+          
           echo JWT_SECRET=test >> .env.test
           echo JWT_EXPIRATION='10m' >> .env.test
 
@@ -71,6 +70,11 @@ jobs:
           echo POSTGRES_PASSWORD=test_pw >> .env.test
           echo POSTGRES_DB=test_db >> .env.test
           echo DATABASE_URL=postgres://test_user:test_pw@localhost:5432/test_db >> .env.test
+
+          echo REDIS_HOST=localhost >> .env.test
+          echo REDIS_PORT=6379 >> .env.test
+          echo REDIS_EX=600 >> .env.test
+          echo REDIS_DB=0 >> .env.test
 
           echo HEADER_USER_ID='x-user-id' >> .env.test
           echo HEADER_IS_ADMIN='x-is-admin' >> .env.test
