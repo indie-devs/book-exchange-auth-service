@@ -8,7 +8,7 @@ import {
   LoginUserAuthReqDto,
   LoginUserAuthResDto,
   RegisterUserAuthDto,
-} from 'src/auth/auth.dto';
+} from 'src/user_auth/auth.dto';
 import { BcryptService } from 'src/bcrypt/bcrypt.service';
 import { AppConfigService } from 'src/config/app-config.service';
 import { AppLoggerService } from 'src/logger/logger.service';

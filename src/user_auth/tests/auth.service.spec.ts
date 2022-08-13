@@ -2,7 +2,7 @@
 import { JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from 'src/user_auth/auth.service';
 import { BcryptService } from 'src/bcrypt/bcrypt.service';
 import { AppConfigService } from 'src/config/app-config.service';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -27,7 +27,6 @@ describe('auth.service.spec.ts', () => {
   let jwtService: JwtService;
   let prismaService: PrismaService;
   let redisService: RedisService;
-  let appConfigService: AppConfigService;
   let bcryptService: BcryptService;
 
   beforeEach(async () => {
@@ -58,7 +57,6 @@ describe('auth.service.spec.ts', () => {
     jwtService = module.get(JwtService);
     prismaService = module.get(PrismaService);
     redisService = module.get(RedisService);
-    appConfigService = module.get(AppConfigService);
     bcryptService = module.get(BcryptService);
   });
   describe('login', () => {

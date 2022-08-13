@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from 'src/user_auth/auth.module';
 import { AppConfigModule } from 'src/config/app-config.module';
 
 import { LoggerMiddleware } from 'src/logger/logger.middleware';

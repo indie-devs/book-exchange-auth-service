@@ -15,11 +15,15 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
-    "test:watch": "jest --watch",
+    "test:unit": "jest --config ./test/jest-unit.json",
+    "test:unit:watch": "jest --config ./test/jest-unit.json --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "postinstall": "npx prisma generate"
+    "test:integration": "npx dotenv-cli -e .env.test -- jest --config ./test/jest-integration.json",
+    "test:integration:watch": "npx dotenv-cli -e .env.test -- jest --config ./test/jest-integration.json --watch",
+    "postinstall": "npx prisma generate",
+    "postinstall:test": "npx dotenv-cli -e .env.test -- npx prisma migrate reset --force && npx prisma generate"
   },
   "engines": {
     "node": ">=14.17.0 <16.15.1"
@@ -33,10 +37,12 @@
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/swagger": "^6.0.3",
     "@prisma/client": "^4.0.0",
+    "@types/lodash": "^4.14.182",
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "ioredis": "^5.2.0",
+    "lodash": "^4.17.21",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "prisma": "^4.0.0",

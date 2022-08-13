@@ -1,4 +1,4 @@
-# **BOOK EXCHANGE AUTH SERVICE GUILDE**
+# **BOOK EXCHANGE AUTH SERVICE GUIDE**
 - [Linux machine](#linux-machine)
 - [Docker](#docker)
 ## **LINUX MACHINE**

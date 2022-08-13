@@ -1,0 +1,17 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "testRegex": ".spec.ts$",
+  "testPathIgnorePatterns": [".integration.spec.(t|j)s", ".e2e.spec.(t|j)s"],
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "collectCoverageFrom": ["**/*.(t|j)s"],
+  "coverageDirectory": "../coverage",
+  "testEnvironment": "node",
+  "moduleDirectories": ["node_modules", "src"],
+  "roots": ["src"],
+  "moduleNameMapper": {
+    "src/(.*)": "<rootDir>/src/$1"
+  },
+  "rootDir": "../"
+}

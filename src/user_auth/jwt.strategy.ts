@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { JwtUserResDto } from 'src/auth/auth.dto';
+import { JwtUserResDto } from 'src/user_auth/auth.dto';
 import { AppConfigService } from 'src/config/app-config.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import TimeUtil from 'src/utils/time/time';
